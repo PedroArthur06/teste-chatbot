@@ -1,0 +1,37 @@
+### ======================================================================
+### CENÁRIO 1: Inserir "Pedro" na Empresa 1 (JMC)
+### ======================================================================
+POST http://127.0.0.1:8000/webhooks/n8n/contatos
+Content-Type: application/json
+Authorization: Bearer token_teste_123
+
+{
+    "phone_number": "85987383127",
+    "cliente": "Pedro"
+}
+
+### ======================================================================
+### CENÁRIO 2: Tentar inserir "Pedro" NOVAMENTE na Empresa 1 (JMC)
+### Teste de Unicidade (O banco fará um Update do nome ou rejeitará dependendo da lógica)
+### ======================================================================
+POST http://127.0.0.1:8000/webhooks/n8n/contatos
+Content-Type: application/json
+Authorization: Bearer token_teste_123
+
+{
+    "phone_number": "85987383127",
+    "cliente": "Pedro (Tentativa Duplicada)"
+}
+
+### ======================================================================
+### CENÁRIO 3: Empresa 2 (Artus) inserindo o MESMO número de telefone
+### Teste Multi-tenant: Deve aceitar, pois o CNPJ é diferente!
+### ======================================================================
+POST http://127.0.0.1:8000/webhooks/n8n/contatos
+Content-Type: application/json
+Authorization: Bearer token_empresa_2
+
+{
+    "phone_number": "85987383127",
+    "cliente": "Pedro (Na Artus)"
+}
