@@ -1,5 +1,5 @@
 import databases
+from config import settings
 
-DATABASE_URL = "mysql+aiomysql://myuser:mypassword@localhost:3306/telenova"
-
-database = databases.Database(DATABASE_URL)
+# Cria a instância do banco
+database = databases.Database(settings.database_url)

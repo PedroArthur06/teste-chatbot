@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from interface.index import ContatoPayload
+from schemas import ContatoPayload
 from service.webhook_service import extrair_tenant_do_token, processar_contato_service
 
 router = APIRouter(prefix="/webhooks/n8n", tags=["Webhooks"])

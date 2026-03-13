@@ -1,12 +1,13 @@
-from fastapi import Header, HTTPException, Depends
-from interface.index import ContatoPayload
+from fastapi import HTTPException, Depends
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from schemas import ContatoPayload
 from database import database
+import pymysql
 
-async def extrair_tenant_do_token(authorization: str = Header(None)):
-    if not authorization or not authorization.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Token ausente ou mal formatado.")
-    
-    token = authorization.split("Bearer ")[1]
+security = HTTPBearer()
+
+async def extrair_tenant_do_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    token = credentials.credentials
     
     # Agora busca o CNPJ no banco de dados com base no token recebido
     query = "SELECT cnpj_empresa FROM empresas WHERE codigo_integracao = :token"
@@ -36,5 +37,9 @@ async def processar_contato_service(payload: ContatoPayload, cnpj_empresa: str):
             "status": "sucesso", 
             "mensagem": f"Contato {payload.phone_number} salvo para a empresa {cnpj_empresa}."
         }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erro ao salvar no banco: {str(e)}")
+    except pymysql.err.IntegrityError as e:
+        raise HTTPException(status_code=400, detail=f"Erro de integridade referencial: {str(e)}")
+    except pymysql.err.OperationalError as e:
+        raise HTTPException(status_code=503, detail=f"Erro operacional do banco de dados (ex: desconexão): {str(e)}")
+    except pymysql.err.MySQLError as e:
+        raise HTTPException(status_code=500, detail=f"Erro interno no banco de dados: {str(e)}")
