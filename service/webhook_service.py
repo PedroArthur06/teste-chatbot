@@ -21,8 +21,8 @@ async def processar_contato_service(payload: ContatoPayload, cnpj_empresa: str):
 
     query = """
         INSERT INTO clientes (cnpj_empresa, phone_number, cliente)
-        VALUES (:cnpj, :telefone, :nome)
-        ON DUPLICATE KEY UPDATE cliente = VALUES(cliente);
+        VALUES (:cnpj, :telefone, :nome) AS new_data
+        ON DUPLICATE KEY UPDATE cliente = new_data.cliente;
     """
     
     nome = payload.cliente if payload.cliente else "Desconhecido"
