@@ -2,16 +2,9 @@ import pytest
 import pytest_asyncio
 from httpx import AsyncClient, ASGITransport
 from main import app
-from database import database
 
 BASE_URL = "http://test"
 pytestmark = pytest.mark.asyncio
-
-@pytest_asyncio.fixture(autouse=True)
-async def gerenciar_banco():
-    await database.connect()
-    yield
-    await database.disconnect()
 
 async def test_inserir_cliente_novo_empresa_1():
     async with AsyncClient(transport=ASGITransport(app=app), base_url=BASE_URL) as client:
@@ -28,7 +21,6 @@ async def test_inserir_cliente_novo_empresa_1():
     dados = response.json()
     assert dados["status"] == "sucesso"
 
-
 async def test_inserir_cliente_duplicado_empresa_1():
     async with AsyncClient(transport=ASGITransport(app=app), base_url=BASE_URL) as client:
         await client.post(
@@ -44,7 +36,6 @@ async def test_inserir_cliente_duplicado_empresa_1():
         
     assert response.status_code == 200
     assert response.json()["status"] == "sucesso"
-
 
 async def test_inserir_mesmo_numero_outra_empresa():
     async with AsyncClient(transport=ASGITransport(app=app), base_url=BASE_URL) as client:
@@ -71,6 +62,3 @@ async def test_token_invalido_deve_falhar():
         )
         
     assert response.status_code == 401
-
-
-# PYTHONPATH=. ./venv/bin/pytest tests/test_webhook.py -v

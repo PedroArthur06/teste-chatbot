@@ -6,3 +6,7 @@ class ContatoPayload(BaseModel):
     phone_number: str = Field(..., description="O número de telefone exato do cliente que interagiu com o bot")
 
     cliente: Optional[str] = Field(None, description="Nome do cliente (se disponível)")
+
+
+class ContatoUpdatePayload(BaseModel):
+    cliente: Optional[str] = Field(None, description= "Novo nome do cliente")

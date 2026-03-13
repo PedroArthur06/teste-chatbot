@@ -1,15 +1,10 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
-from database import database
 from controller.webhook_controller import router as webhook_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    print("Conectando ao banco de dados...")
-    await database.connect()
     yield 
-    print("Desconectando do banco de dados...")
-    await database.disconnect()
 
 app = FastAPI(
     title="Telenova Multi-Tenant API", 
